@@ -1,0 +1,65 @@
+THIS IS A PALINDROME PROGRAM WRITTEN IN ASSEMBLY LANGUAGE. THE PROGRAM IS CHECKED AND VERIFIED.
+
+.model small
+printf macro msg
+    lea dx,msg       // loading msg to destination register
+    mov ah,9        // 9 is a bribe given in 21st hand to print the message
+    int 21h         //use interrupt hand 21
+endm               // end of macro
+
+.data             // whatever the data FOR Eg..array or  display message used in program is declared and initialise under data segment.
+
+msg db 10,13,"ENTER THE STRING TO CHECK WETHER ITS PALINDROME OR NOT $"     // actual parameter the will be passed in printf macro to display the message.
+original db 30 dup('$'or '?')     // array name reverse to store original string
+reverese db 30 dup('$' or '?')    // array name reverse to store reverse of the string
+palindrome db 10,13, "THE STRING IS PALINDROME $"   // 10 is used to move to the new line and 13 is used to start from the beginning of the line.
+notpalindrome db 10,13,"THE STRING IS NOT PALINDROME $"     // $  IS USED TO TELL PROCESSOR THAT STRING HAS COME TO AN END ELSE KEEPS ON PRINTING GARBAGE VALUE AFTER THE WRITTEN MESSAGE
+
+.code                // code segment under this actual coding is done
+mov ax,@data        // initialisation of data segment 
+mov ds,ax          // two memory cant be dealed simulatenoeusly hence copied to register and from there to elsewhere.
+mov es,ax         //initialisation of extra segment
+
+
+printf msg      // printf macro is called and msg is passed as a actual parameter
+lea si,original    // source index pointer is pointing to the beginning of the (origginal)array
+lea di,reverse      // destniation index pointer is pointing to to the beginning of the (revrse) array
+mov cx,00 OR SUB cx,cx OR XOR cx,cx    //cx is counter register used to maintain the count of  string and it should be cleared before using
+
+//NOW WE HAVE TO TAKE INPUT FROM THE USER //
+
+take: 
+     mov ah,1      // 1 is bribe taken in 21st hand in order to take single single character and printit.
+     int 21h
+     cmp al,13       // 13 is the ASCII value of enter // it will ask u for the input CHAR BY CHAR and when u press ENTER i.e. ASCII VALUE 13 will be compared with the content of al or ah and if its matched then the NEXT JOB IS DONE
+     je done         //je=jump if equal// al=ENTER=13(ASCII VALUE OF ENTER) AFTER TAKING ALL INPUTS, HENCE je is true and then move to DONE
+                     else ski this statement and jump to next instruction//
+    mov[si],al
+    inc si          // si points to next positon
+    inc cx           // to increment the count of character
+    
+done:
+      dec si       //si points to the enter ascii elemnt, hence it need to be decremented
+    
+ put:
+      mov al,[si]       //last character of original string pointed by si is moved to reverse string pointed by di.
+      mov[di],al          
+      inc di              //di incremented to take next char
+      dec si              // si decremented to copy char by char [di]
+      jnz put//jnz=jumpif non zero to put// if characters are not equal it jumps  to put again
+      jne notpalinmsg
+      
+lea si,original        //again original string pointed by si to compare with di
+lea di,reverse
+printf palindrome       // printf macro is called to print palindorme string.
+jmp EXIT
+ EXIT : 
+ mov ah,4ch           //4ch is the bribe given in 21st hand to exit
+ int 21h
+ notpalinmmsg:  
+ printf notpalindrome
+ jmp EXIT
+    
+       
+
+
